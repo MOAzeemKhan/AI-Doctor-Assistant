@@ -5,7 +5,11 @@ import threading
 from faster_whisper import WhisperModel
 
 # Load the model
-model = WhisperModel("small", device="cpu")  # or device="cuda" if GPU available
+#model = WhisperModel("small", device="cpu")  # or device="cuda" if GPU available
+model = WhisperModel("small", device="cpu", compute_type="int8")
+
+
+
 
 # Audio recording parameters
 samplerate = 16000  # Whisper expects 16kHz audio
@@ -43,7 +47,10 @@ def transcribe_audio():
             from scipy.io.wavfile import write
             write(temp_path, samplerate, audio_data)
 
-            segments, info = model.transcribe(temp_path, beam_size=5)
+            #segments, info = model.transcribe(temp_path, beam_size=5)
+            #segments, info = model.transcribe(temp_path, beam_size=1)
+            segments, info = model.transcribe(temp_path, beam_size=1, vad_filter=True)
+
             print("\n[Transcription]")
             for segment in segments:
                 print(f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text}")
